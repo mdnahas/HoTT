@@ -177,18 +177,24 @@ Definition concat_1p {A : Type} {x y : A} (p : x = y)
 Definition concat_p_pp {A : Type} {x y z t : A} (p : x = y) (q : y = z) (r : z = t) 
   : p @ (q @ r) = (p @ q) @ r 
 :=
-  match r with idpath =>
-    match q with idpath =>
-      match p with idpath => 1
-      end end end.
+  match r with 
+    | idpath =>
+      match q with 
+        | idpath =>
+          match p with idpath => 1 end 
+      end 
+  end.
 
 Definition concat_pp_p {A : Type} {x y z t : A} (p : x = y) (q : y = z) (r : z = t) 
   : (p @ q) @ r = p @ (q @ r) 
 :=
-  match r with idpath =>
-    match q with idpath =>
-      match p with idpath => 1
-      end end end.
+  match r with 
+    | idpath =>
+      match q with 
+        | idpath =>
+          match p with idpath => 1 end 
+      end 
+  end.
 
 (** The left inverse law. *)
 Definition concat_pV {A : Type} {x y : A} (p : x = y) 
@@ -207,39 +213,42 @@ Definition concat_Vp {A : Type} {x y : A} (p : x = y)
 Definition concat_V_pp {A : Type} {x y z : A} (p : x = y) (q : y = z) 
   : p^ @ (p @ q) = q
 :=
-  match q with idpath =>
-    match p with idpath => 1 end
+  match q with 
+    | idpath =>
+      match p with idpath => 1 end
   end.
 
 Definition concat_p_Vp {A : Type} {x y z : A} (p : x = y) (q : x = z)
   : p @ (p^ @ q) = q
 :=
-  match q with idpath =>
-    match p with idpath => 1 end
+  match q with 
+    | idpath =>
+      match p with idpath => 1 end 
   end.
 
 Definition concat_pp_V {A : Type} {x y z : A} (p : x = y) (q : y = z)
   : (p @ q) @ q^ = p
 :=
-  match q with idpath =>
-    match p with idpath => 1 end
+  match q with 
+    | idpath =>
+      match p with idpath => 1 end 
   end.
 
 Definition concat_pV_p {A : Type} {x y z : A} (p : x = z) (q : y = z)
   : (p @ q^) @ q = p
 :=
   (match q as i return forall p, (p @ i^) @ i = p with
-    idpath =>
-    fun p =>
-      match p with idpath => 1 end
+    | idpath =>
+      fun p => match p with idpath => 1 end
   end) p.
 
 (** Inverse distributes over concatenation *)
 Definition inv_pp {A : Type} {x y z : A} (p : x = y) (q : y = z) 
   : (p @ q)^ = q^ @ p^
 :=
-  match q with idpath =>
-    match p with idpath => 1 end
+  match q with 
+    | idpath =>
+      match p with idpath => 1 end
   end.
   
 (** Inverse is an involution. *)
@@ -387,9 +396,9 @@ Definition ap_1 {A B : Type} (x : A) (f : A -> B)
 Definition ap_pp {A B : Type} (f : A -> B) {x y z : A} (p : x = y) (q : y = z)
   : ap f (p @ q) = (ap f p) @ (ap f q)
 :=
-  match q with
-    idpath =>
-    match p with idpath => 1 end
+  match q with 
+    | idpath => 
+      match p with idpath => 1 end
   end.
 
 Definition ap_p_pp {A B : Type} (f : A -> B) {w x y z : A}
@@ -602,8 +611,9 @@ Definition transport_1 {A : Type} {P : A -> Type} {x : A} (u : P x)
 Definition transport_pp {A : Type} {P : A -> Type} {x y z : A} (p : x = y) (q : y = z) (u : P x) 
   : p @ q # u = q # p # u 
 :=
-  match q with idpath =>
-    match p with idpath => 1 end
+  match q with 
+    | idpath =>
+      match p with idpath => 1 end
   end.
 
 (** TODO: The following two results follow directly from [transport_1] and
@@ -611,16 +621,16 @@ Definition transport_pp {A : Type} {P : A -> Type} {x y z : A} (p : x = y) (q : 
 Definition transport_pV {A : Type} {P : A -> Type} {x y : A} (p : x = y) (z : P y) 
   : p # p^ # z = z 
 :=
-  (match p as i in (_ = y) return (forall z : P y, i # i^ # z = z)
-     with idpath => fun _ => 1
-   end) z.
+  (match p as i in (_ = y) return (forall z : P y, i # i^ # z = z) with 
+     | idpath => fun _ => 1
+  end) z.
 
 Definition transport_Vp {A : Type} {P : A -> Type} {x y : A} (p : x = y) (z : P x) 
   : p^ # p # z = z
 := 
-  (match p as i return (forall z : P x, i^ # i # z = z)
-     with idpath => fun _ => 1
-   end) z.
+  (match p as i return (forall z : P x, i^ # i # z = z) with 
+     | idpath => fun _ => 1
+  end) z.
 
 (** In the future, we may expect to need some higher coherence for transport:
   for instance, that transport acting on the associator is trivial. *)
@@ -773,10 +783,10 @@ Notation cancelR := whiskerR (only parsing).
 Definition whiskerR_p1 {A : Type} {x y : A} {p q : x = y} (h : p = q)
   : (concat_p1 p) ^ @ whiskerR h 1 @ concat_p1 q = h
 :=
-  match h with idpath =>
-    match p with idpath =>
-      1
-    end end.
+  match h with 
+    | idpath =>
+      match p with idpath => 1 end 
+  end.
 
 Definition whiskerR_1p {A : Type} {x y z : A} (p : x = y) (q : y = z)
   : whiskerR 1 q = 1 :> (p @ q = p @ q)
@@ -791,10 +801,10 @@ Definition whiskerL_p1 {A : Type} {x y z : A} (p : x = y) (q : y = z)
 Definition whiskerL_1p {A : Type} {x y : A} {p q : x = y} (h : p = q)
   : (concat_1p p) ^ @ whiskerL 1 h @ concat_1p q = h
 :=
-  match h with idpath =>
-    match p with idpath =>
-      1
-    end end.
+  match h with 
+    | idpath =>
+      match p with idpath => 1 end 
+  end.
 
 Definition concat2_p1 {A : Type} {x y : A} {p q : x = y} (h : p = q)
   : h @@ 1 = whiskerR h 1 :> (p @ 1 = q @ 1)
@@ -825,10 +835,8 @@ Definition concat_whisker {A} {x y z : A} (p p' : x = y) (q q' : y = z)
   : (whiskerR a q) @ (whiskerL p' b) = (whiskerL p b) @ (whiskerR a q')
 :=
   match b with
-    idpath =>
-    match a with idpath =>
-      (concat_1p _)^
-    end
+    | idpath =>
+      match a with idpath => (concat_1p _)^ end
   end.
 
 (** Structure corresponding to the coherence equations of a bicategory. *)
