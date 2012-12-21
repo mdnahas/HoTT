@@ -20,11 +20,14 @@ Arguments center A {_} : simpl never.
 Generalizable Variables A B.
 
 (** If a space is contractible, then any two points in it are connected by a path in a canonical way. *)
-Definition path_contr `{Contr A} (x y : A) : x = y
-  := (contr x)^ @ (contr y).
+Definition path_contr `{Contr A} (x y : A) 
+  : x = y
+:= 
+  (contr x)^ @ (contr y).
 
 (** Similarly, any two parallel paths in a contractible space are homotopic, which is just the principle UIP. *)
-Definition path2_contr `{Contr A} {x y : A} (p q : x = y) : p = q.
+Definition path2_contr `{Contr A} {x y : A} (p q : x = y) 
+  : p = q.
 Proof.
   assert (K : forall (r : x = y), r = path_contr x y).
     intro r; destruct r; apply inverse; now apply concat_Vp.
@@ -37,13 +40,30 @@ Instance contr_paths_contr `{Contr A} (x y : A) : Contr (x = y) := {
   contr := path2_contr ((contr x)^ @ contr y)
 }.
 
+
+
 (** Also, the total space of any based path space is contractible. *)
-Instance contr_basedpaths {X : Type} (x : X) : Contr {y : X & x = y}.
-  exists (x ; 1).
-  intros [y []]; reflexivity.
+Lemma contr_basedpaths_proof {X : Type} (x : X) : 
+  forall y : (exists y : X, x = y), (x; 1) = y.
+Proof.
+  intros [y []].
+  reflexivity.
 Defined.
 
-Instance contr_basedpaths' {X : Type} (x : X) : Contr {y : X & y = x}.
-  exists (existT (fun y => y = x) x 1).
-  intros [y []]; reflexivity.
+Instance contr_basedpaths {X : Type} (x : X) : Contr {y : X & x = y} := {
+  center := (x ; 1);
+  contr := contr_basedpaths_proof x
+}.
+
+Lemma contr_basedpaths_proof' {X : Type} (x : X) : 
+  forall y : (exists y : X, y = x), (x; 1) = y.
+Proof.
+  intros [y []].
+  reflexivity.
 Defined.
+
+Instance contr_basedpaths' {X : Type} (x : X) : Contr {y : X & y = x} := {
+  center := (existT (fun y => y = x) x 1);
+  contr := contr_basedpaths_proof' x
+}.
+
