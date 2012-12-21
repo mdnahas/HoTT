@@ -37,3 +37,7 @@ Makefile_ssrplugin
 *.cmxa
 # generated dependency files:
 *.d
+
+theories/*.html
+theories/*.css
+.dir-locals.el
