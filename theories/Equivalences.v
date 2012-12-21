@@ -108,11 +108,14 @@ Section IsEquivHomotopic.
   Let adj (a : A) : sect (g a) = ap g (retr a).
   Proof.
     unfold sect, retr.
-    rewrite ap_pp. apply moveR_Vp.
-    rewrite concat_p_pp, <- concat_Ap, concat_pp_p, <- concat_Ap.
-    rewrite ap_V; apply moveL_Vp.
-    rewrite <- ap_compose; unfold compose; rewrite (concat_A1p (eisretr f) (h a)).
-    apply cancelR, eisadj.
+    rewrite ap_pp. 
+    refine (moveR_Vp _ _ _ _).
+      rewrite concat_p_pp, <- concat_Ap, concat_pp_p, <- concat_Ap.
+      rewrite ap_V; 
+      refine (moveL_Vp _ _ _ _).
+        rewrite <- ap_compose; unfold compose; rewrite (concat_A1p (eisretr f) (h a)).
+        refine (cancelR _ _).
+          exact (eisadj _ _).
   Qed.
 
   (* It's unclear to me whether this should be a declared instance.  Will it cause the unifier to spin forever searching for homotopies? *)
@@ -138,28 +141,29 @@ Section EquivInverse.
     rewrite <- (concat_Vp (ap f^-1 (eisretr f (f (f^-1 b))))).
     rewrite (whiskerR (inverse2 (ap02 f^-1 (eisadj f (f^-1 b)))) _).
     refine (whiskerL _ (concat_1p (eissect _ _))^ @ _).
-    rewrite <- (concat_Vp (eissect f (f^-1 (f (f^-1 b))))).
-    rewrite <- (whiskerL _ (concat_1p (eissect f (f^-1 (f (f^-1 b)))))).
-    rewrite <- (concat_pV (ap f^-1 (eisretr f (f (f^-1 b))))).
-    apply moveL_M1.
-    repeat rewrite concat_p_pp.
-    (* Now we apply lots of naturality and cancel things. *)
-    rewrite <- (concat_pp_A1 (fun a => (eissect f a)^) _ _).
-    rewrite (ap_compose' f f^-1).
-    rewrite <- (ap_p_pp _ _ (ap f (ap f^-1 (eisretr f (f (f^-1 b))))) _).
-    rewrite <- (ap_compose f^-1 f); unfold compose.
-    rewrite (concat_A1p (eisretr f) _).
-    rewrite ap_pp, concat_p_pp.
-    rewrite (concat_pp_V _ (ap f^-1 (eisretr f (f (f^-1 b))))).
-    repeat rewrite <- ap_V; rewrite <- ap_pp.
-    rewrite <- (concat_pA1 (fun y => (eissect f y)^) _).
-    rewrite ap_compose', <- (ap_compose f^-1 f); unfold compose.
-    rewrite <- ap_p_pp.
-    rewrite (concat_A1p (eisretr f) _).
-    rewrite concat_p_Vp.
-    rewrite <- ap_compose; unfold compose.
-    rewrite (concat_pA1_p (eissect f) _).
-    rewrite concat_pV_p; apply concat_Vp.
+      rewrite <- (concat_Vp (eissect f (f^-1 (f (f^-1 b))))).
+      rewrite <- (whiskerL _ (concat_1p (eissect f (f^-1 (f (f^-1 b)))))).
+      rewrite <- (concat_pV (ap f^-1 (eisretr f (f (f^-1 b))))).
+      refine (moveL_M1 _ _ _).
+        repeat rewrite concat_p_pp.
+        (* Now we apply lots of naturality and cancel things. *)
+        rewrite <- (concat_pp_A1 (fun a => (eissect f a)^) _ _).
+        rewrite (ap_compose' f f^-1).
+        rewrite <- (ap_p_pp _ _ (ap f (ap f^-1 (eisretr f (f (f^-1 b))))) _).
+        rewrite <- (ap_compose f^-1 f); unfold compose.
+        rewrite (concat_A1p (eisretr f) _).
+        rewrite ap_pp, concat_p_pp.
+        rewrite (concat_pp_V _ (ap f^-1 (eisretr f (f (f^-1 b))))).
+        repeat rewrite <- ap_V; rewrite <- ap_pp.
+        rewrite <- (concat_pA1 (fun y => (eissect f y)^) _).
+        rewrite ap_compose', <- (ap_compose f^-1 f); unfold compose.
+        rewrite <- ap_p_pp.
+        rewrite (concat_A1p (eisretr f) _).
+        rewrite concat_p_Vp.
+        rewrite <- ap_compose; unfold compose.
+        rewrite (concat_pA1_p (eissect f) _).
+        rewrite concat_pV_p; 
+        exact (concat_Vp _).
   Qed.
 
   Global Instance isequiv_inverse : IsEquiv f^-1
@@ -222,13 +226,14 @@ Section Adjointify.
   Let is_adjoint' (a : A) : isretr (f a) = ap f (issect' a).
   Proof.
     unfold issect'.
-    apply moveR_M1.
-    repeat rewrite ap_pp, concat_p_pp; rewrite <- ap_compose; unfold compose.
-    rewrite (concat_pA1 (fun b => (isretr b)^) (ap f (issect a)^)).
-    repeat rewrite concat_pp_p; rewrite ap_V; apply moveL_Vp; rewrite concat_p1.
-    rewrite concat_p_pp, <- ap_compose; unfold compose.
-    rewrite (concat_pA1 (fun b => (isretr b)^) (isretr (f a))).
-    rewrite concat_pV, concat_1p; reflexivity.
+    refine (moveR_M1 _ _ _).
+      repeat rewrite ap_pp, concat_p_pp; rewrite <- ap_compose; unfold compose.
+      rewrite (concat_pA1 (fun b => (isretr b)^) (ap f (issect a)^)).
+      repeat rewrite concat_pp_p; rewrite ap_V; apply moveL_Vp; rewrite concat_p1.
+      rewrite concat_p_pp, <- ap_compose; unfold compose.
+      rewrite (concat_pA1 (fun b => (isretr b)^) (isretr (f a))).
+      rewrite concat_pV, concat_1p. 
+      reflexivity.
   Qed.
 
   (** We don't make this a typeclass instance, because we want to control when we are applying it. *)
@@ -290,14 +295,20 @@ Instance contr_hfiber_equiv `(IsEquiv A B f) (b : B)
 Proof.
   assert (fp : forall (x x':A) (p:f x = b) (p':f x' = b)
       (q : x = x') (r : ap f q @ p' = p), (x;p) = (x';p') :> {x:A & f x = b}).
-    intros x x' p p' q r; destruct q; apply ap; exact (r^ @ concat_1p _).
+    intros x x' p p' q r.
+    destruct q as [(*idpath*)].
+    refine (ap _ _).
+      exact (r^ @ concat_1p _).
+
   refine (BuildContr _ (f^-1 b; eisretr f b) _).
-  intros [a p].
-  refine (fp (f^-1 b) a (eisretr f b) p ((ap f^-1 p)^ @ eissect f a) _).
-  rewrite ap_pp, ap_V, <- ap_compose, concat_pp_p, <- eisadj.
-  apply moveR_Vp.
-  exact ((concat_A1p (eisretr f) p)^).
+    intros y.
+    destruct y as [(*sigT*) a p].
+    refine (fp (f^-1 b) a (eisretr f b) p ((ap f^-1 p)^ @ eissect f a) _).
+      rewrite ap_pp, ap_V, <- ap_compose, concat_pp_p, <- eisadj.
+      refine ((moveR_Vp _ _ _) _).
+       exact ((concat_A1p (eisretr f) p)^).
 Qed.
+
 
 Instance isequiv_contr_hfibers `(f : A -> B)
     (hfc : forall y:B, Contr {x:A & f x = y})
@@ -309,8 +320,11 @@ Proof.
     intros a.
     assert (fp : forall (x x' : {x:A & f x = f a}) (q : x = x'),
         { p : projT1 x = projT1 x' & projT2 x = ap f p @ projT2 x' }).
-      intros x _ []. exists 1; exact ((concat_1p _)^).
-    set (r := fp (@center _ (hfc (f a))) (a;1) (@contr _ (hfc (f a)) (a;1))).
+      intros x x' q.
+      destruct q as [(*idpath*)].
+      exists 1.
+      exact ((concat_1p _)^).
+    pose (r := fp (@center _ (hfc (f a))) (a;1) (@contr _ (hfc (f a)) (a;1))).
     exact (projT1 r ; projT2 r @ concat_p1 _).
   exact (BuildIsEquiv _ _ f g isretr
     (fun a => projT1 (sa a)) (fun a => projT2 (sa a))).
