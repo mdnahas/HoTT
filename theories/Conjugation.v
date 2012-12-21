@@ -20,7 +20,7 @@ Definition conjp_concat {A : Type} (f g : A -> A) (r : forall x, f x = g x)
   : conjp r (p @ q) = conjp r p @ (conjp r q).
 Proof.
   unfold conjp.
-  try repeat (rewrite concat_p_pp).
+  repeat (rewrite concat_p_pp).
   rewrite concat_pp_V.
   reflexivity.
 Qed.
@@ -29,17 +29,29 @@ Lemma ap_to_conjp {A B : Type} {f g : A -> B} (p : forall x, f x = g x)
     {x y : A} (q : x = y) 
   : ap g q = conjp p (ap f q).
 Proof.
-  destruct q.  unfold conjp.  simpl.
-  path_via ((p x)^ @ p x).  apply inverse ; apply concat_Vp.
-  apply whiskerR.  apply inverse, concat_p1.
+  destruct q as [(*idpath*)].
+  unfold conjp.  
+  simpl.
+  path_via ((p x)^ @ p x).  
+    refine (inverse _).
+      refine (concat_Vp _).
+
+    refine (whiskerR _ (p x)).  
+      refine (inverse _).
+        refine (concat_p1 _).
 Qed.
 
 Lemma conjp_ap {A : Type} {f : A -> A} (p : forall x, f x = x) {x y : A} (q : x = y) 
   : conjp p (ap f q) = q.
 Proof.
-  destruct q.  unfold conjp.  simpl.
-  path_via ((p x)^ @ p x). apply whiskerR.  apply concat_p1.
-  apply concat_Vp.
+  destruct q as [(*idpath*)].
+  unfold conjp.  
+  simpl.
+  path_via ((p x)^ @ p x). 
+    refine (whiskerR _ (p x)).
+      refine (concat_p1 _).
+
+    refine (concat_Vp _).
 Qed.
 
 Lemma ap1_to_conjp {A : Type} {f : A -> A} (p : forall x, idmap x = f x) 
@@ -47,7 +59,10 @@ Lemma ap1_to_conjp {A : Type} {f : A -> A} (p : forall x, idmap x = f x)
   : ap f q = conjp p q.
 Proof.
   path_via (conjp p (ap idmap q)).
-  apply ap_to_conjp.  apply ap; apply ap_idmap.
+    refine (ap_to_conjp p q).  
+    
+    refine (ap (conjp p) _).
+      refine (ap_idmap _).
 Defined.
 
 (* TEMPORARILY COMMENTED OUT.
