@@ -30,7 +30,10 @@ Definition path2_contr `{Contr A} {x y : A} (p q : x = y)
   : p = q.
 Proof.
   assert (K : forall (r : x = y), r = path_contr x y).
-    intro r; destruct r; apply inverse; now apply concat_Vp.
+    intros r.
+    destruct r as [(*idpath*)].
+    refine (inverse _).
+      exact (concat_Vp _).
   path_via (path_contr x y).
 Defined.
 
@@ -46,7 +49,9 @@ Instance contr_paths_contr `{Contr A} (x y : A) : Contr (x = y) := {
 Lemma contr_basedpaths_proof {X : Type} (x : X) : 
   forall y : (exists y : X, x = y), (x; 1) = y.
 Proof.
-  intros [y []].
+  intros y.
+  destruct y as [(*sigT*) witness proof].
+  destruct proof as [(*idpath*)].
   reflexivity.
 Defined.
 
@@ -58,7 +63,9 @@ Instance contr_basedpaths {X : Type} (x : X) : Contr {y : X & x = y} := {
 Lemma contr_basedpaths_proof' {X : Type} (x : X) : 
   forall y : (exists y : X, y = x), (x; 1) = y.
 Proof.
-  intros [y []].
+  intros y.
+  destruct y as [(*sigT*) witness proof].
+  destruct proof as [(*idpath*)].
   reflexivity.
 Defined.
 
