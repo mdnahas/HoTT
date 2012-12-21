@@ -19,7 +19,8 @@ Local Open Scope path_scope.
 (** Naming convention: we use [equiv] and [Equiv] systematically to denote types of equivalences, and [isequiv] and [IsEquiv] systematically to denote the assertion that a given map is an equivalence. *)
 
 (** The fact that [r] is a left inverse of [s]. It is called [cancel] in ssreflect.  As a mnemonic, note that the partially applied type [Sect s] is the type of proofs that [s] is a section. *)
-Definition Sect {A B : Type} (s : A -> B) (r : B -> A) :=
+Definition Sect {A B : Type} (s : A -> B) (r : B -> A) 
+:=
   forall x : A, r (s x) = x.
 
 (** A typeclass that includes the data making [f] into an adjoint equivalence. *)
@@ -59,15 +60,20 @@ Notation "f ^-1" := (@equiv_inv _ _ f _) (at level 3) : equiv_scope.
 Generalizable Variables A B C f g.
 
 (** The identity map is an equivalence. *)
-Instance isequiv_idmap (A : Type) : IsEquiv idmap :=
+Instance isequiv_idmap (A : Type) : IsEquiv idmap 
+:=
   BuildIsEquiv A A idmap idmap (fun _ => 1) (fun _ => 1) (fun _ => 1).
 
-Definition equiv_idmap (A : Type) : A <~> A := BuildEquiv A A idmap _.
+Definition equiv_idmap (A : Type) 
+  : A <~> A 
+:= 
+  BuildEquiv A A idmap _.
 
 (** The composition of equivalences is an equivalence. *)
 Instance isequiv_compose `{IsEquiv A B f} `{IsEquiv B C g}
   : IsEquiv (compose g f)
-  := BuildIsEquiv A C (compose g f)
+:= 
+  BuildIsEquiv A C (compose g f)
     (compose f^-1 g^-1)
     (fun c => ap g (eisretr f (g^-1 c)) @ eisretr g c)
     (fun a => ap (f^-1) (eissect g (f a)) @ eissect f a)
@@ -84,7 +90,9 @@ Instance isequiv_compose `{IsEquiv A B f} `{IsEquiv B C g}
 
 Definition equiv_compose `{IsEquiv B C g} `{IsEquiv A B f}
   : A <~> C
-  := BuildEquiv A C (compose g f) _.
+:= 
+  BuildEquiv A C (compose g f) _.
+
 
 (** Anything homotopic to an equivalence is an equivalence. *)
 Section IsEquivHomotopic.
@@ -172,8 +180,8 @@ Section EquivCancelR.
 
   (* Same question as with isequiv_homotopic. *)
   Global Instance isequiv_cancelR : IsEquiv g
-  := isequiv_homotopic (compose (compose g f) f^-1) g
-       (fun b => ap g (eisretr f b)).
+    := isequiv_homotopic (compose (compose g f) f^-1) g
+         (fun b => ap g (eisretr f b)).
 
   Definition equiv_cancelR : B <~> C
     := BuildEquiv _ _ g isequiv_cancelR.
@@ -188,8 +196,8 @@ Section EquivCancelL.
 
   (* Same question as with isequiv_homotopic. *)
   Global Instance isequiv_cancelL : IsEquiv f
-  := isequiv_homotopic (compose g^-1 (compose g f)) f
-       (fun a => eissect g (f a)).
+    := isequiv_homotopic (compose g^-1 (compose g f)) f
+         (fun a => eissect g (f a)).
 
   Definition equiv_cancelL : A <~> B
     := BuildEquiv _ _ f isequiv_cancelL.
@@ -252,7 +260,8 @@ End HIso.
 (** If [f] is an equivalence, then so is [ap f].  Here again we are lazy and use [adjointify]. *)
 Instance isequiv_ap `{IsEquiv A B f} (x y : A)
   : IsEquiv (@ap A B f x y)
-  := isequiv_adjointify (ap f)
+:= 
+  isequiv_adjointify (ap f)
   (fun q => (eissect f x)^  @  ap f^-1 q  @  eissect f y)
   (fun q =>
     ap_pp f _ _
@@ -271,7 +280,8 @@ Instance isequiv_ap `{IsEquiv A B f} (x y : A)
 
 Definition equiv_ap `{IsEquiv A B f} (x y : A)
   : (x = y) <~> (f x = f y)
-  := BuildEquiv _ _ (ap f) _.
+:= 
+  BuildEquiv _ _ (ap f) _.
   
 (** If [f] is an equivalence, then its homotopy fibers are contractible.  That is, it is a Voevodsky equivalence, or a homotopy bijection.  Probably the following two proofs should really be using some standard facts about paths in Sigma types.  *)
 
@@ -290,7 +300,7 @@ Proof.
 Qed.
 
 Instance isequiv_contr_hfibers `(f : A -> B)
-  (hfc : forall y:B, Contr {x:A & f x = y})
+    (hfc : forall y:B, Contr {x:A & f x = y})
   : IsEquiv f.
 Proof.
   pose (g b := projT1 (@center _ (hfc b))).
@@ -307,6 +317,7 @@ Proof.
 Defined.
 
 Definition equiv_contr_hfibers `(f : A -> B)
-  (hfc : forall y:B, Contr {x:A & f x = y})
+    (hfc : forall y:B, Contr {x:A & f x = y})
   : (A <~> B)
-  := BuildEquiv _ _ f (isequiv_contr_hfibers f hfc).
+:= 
+  BuildEquiv _ _ f (isequiv_contr_hfibers f hfc).
