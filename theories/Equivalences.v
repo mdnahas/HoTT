@@ -295,10 +295,7 @@ Instance contr_hfiber_equiv `(IsEquiv A B f) (b : B)
 Proof.
   assert (fp : forall (x x':A) (p:f x = b) (p':f x' = b)
       (q : x = x') (r : ap f q @ p' = p), (x;p) = (x';p') :> {x:A & f x = b}).
-    intros x x' p p' q r.
-    destruct q as [(*idpath*)].
-    refine (ap _ _).
-      exact (r^ @ concat_1p _).
+    { intros x x' p p' q r. destruct q as [(*idpath*)]. refine (ap _ _). exact (r^ @ concat_1p _). }
 
   refine (BuildContr _ (f^-1 b; eisretr f b) _).
     intros y.
