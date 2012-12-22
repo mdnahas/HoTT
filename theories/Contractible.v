@@ -30,10 +30,7 @@ Definition path2_contr `{Contr A} {x y : A} (p q : x = y)
   : p = q.
 Proof.
   assert (K : forall (r : x = y), r = path_contr x y).
-    intros r.
-    destruct r as [(*idpath*)].
-    refine (inverse _).
-      exact (concat_Vp _).
+    { intros r. destruct r as [(*idpath*)]. exact (inverse (concat_Vp _)). }
   path_via (path_contr x y).
 Defined.
 
