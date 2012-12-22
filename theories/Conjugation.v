@@ -33,12 +33,8 @@ Proof.
   unfold conjp.  
   simpl.
   path_via ((p x)^ @ p x).  
-    refine (inverse _).
-      refine (concat_Vp _).
-
-    refine (whiskerR _ (p x)).  
-      refine (inverse _).
-        refine (concat_p1 _).
+    { exact (inverse (concat_Vp _)). }
+    { refine (whiskerR _ (p x)). refine (inverse _). exact (concat_p1 _). }
 Qed.
 
 Lemma conjp_ap {A : Type} {f : A -> A} (p : forall x, f x = x) {x y : A} (q : x = y) 
@@ -48,10 +44,8 @@ Proof.
   unfold conjp.  
   simpl.
   path_via ((p x)^ @ p x). 
-    refine (whiskerR _ (p x)).
-      refine (concat_p1 _).
-
-    refine (concat_Vp _).
+    { refine (whiskerR _ (p x)). exact (concat_p1 _). }
+    { exact (concat_Vp _). }
 Qed.
 
 Lemma ap1_to_conjp {A : Type} {f : A -> A} (p : forall x, idmap x = f x) 
@@ -59,10 +53,8 @@ Lemma ap1_to_conjp {A : Type} {f : A -> A} (p : forall x, idmap x = f x)
   : ap f q = conjp p q.
 Proof.
   path_via (conjp p (ap idmap q)).
-    refine (ap_to_conjp p q).  
-    
-    refine (ap (conjp p) _).
-      refine (ap_idmap _).
+    { exact (ap_to_conjp p q). }
+    { refine (ap (conjp p) _). exact (ap_idmap _). }
 Defined.
 
 (* TEMPORARILY COMMENTED OUT.
